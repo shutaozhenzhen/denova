@@ -133,7 +133,9 @@ grep -Fq 'preserved = true' "${INSTALL_DIR}/config.toml"
 
 # Termux must resolve to the android package even though uname reports Linux.
 # Force the branch so CI covers it on hosts that are not Termux.
-TERMUX_ARCHIVE="denova-${VERSION}-android-arm64.tar.gz"
+# The forced branch still resolves the architecture from the host, so the
+# fixture must follow uname instead of assuming arm64.
+TERMUX_ARCHIVE="denova-${VERSION}-android-${platform_arch}.tar.gz"
 (cd "${PACKAGE_ROOT}" && tar -czf "${RELEASE_DIR}/${TERMUX_ARCHIVE}" denova)
 if command -v sha256sum >/dev/null 2>&1; then
   termux_checksum="$(sha256sum "${RELEASE_DIR}/${TERMUX_ARCHIVE}" | awk '{print $1}')"
