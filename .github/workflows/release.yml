@@ -76,7 +76,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [darwin-arm64, darwin-x64, linux-arm64, linux-x64, windows-x64]
+        target: [darwin-arm64, darwin-x64, linux-arm64, linux-x64, android-arm64, windows-x64]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -131,7 +131,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          for target in darwin-arm64 darwin-x64 linux-arm64 linux-x64 windows-x64; do
+          for target in darwin-arm64 darwin-x64 linux-arm64 linux-x64 android-arm64 windows-x64; do
             extension=tar.gz
             if [[ "$target" == windows-x64 ]]; then extension=zip; fi
             test -s "denova-$RELEASE_TAG-$target.$extension"

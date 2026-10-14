@@ -12,9 +12,25 @@ cleanup() {
 trap cleanup 0
 trap 'exit 1' HUP INT TERM
 
+# Mirror install.sh: Termux reports the Linux kernel but needs the android
+# package, because a linux build aborts with SIGSYS under Android's seccomp
+# policy.
+is_termux() {
+  case "${PREFIX:-}" in
+    */com.termux/files/usr) return 0 ;;
+  esac
+  [ -n "${TERMUX_VERSION:-}" ]
+}
+
 case "$(uname -s)" in
   Darwin) platform_os="darwin" ;;
-  Linux) platform_os="linux" ;;
+  Linux)
+    if is_termux; then
+      platform_os="android"
+    else
+      platform_os="linux"
+    fi
+    ;;
   *) printf 'Skipping installer test on unsupported OS.\n'; exit 0 ;;
 esac
 
@@ -70,6 +86,9 @@ while [ "$#" -gt 0 ]; do
     *) url="$1"; shift ;;
   esac
 done
+if [ -n "${DENOVA_INSTALL_TEST_URL_LOG:-}" ]; then
+  printf '%s\n' "${url}" >> "${DENOVA_INSTALL_TEST_URL_LOG}"
+fi
 case "${url}" in
   */releases/latest) printf '%s' 'https://github.com/alfredxw/denova/releases/tag/v0.4.0' ;;
   */checksums.txt) cp "${DENOVA_INSTALL_TEST_RELEASE_DIR}/checksums.txt" "${output}" ;;
@@ -111,5 +130,27 @@ fi
 grep -Fq 'SHA-256 verification failed' "${TEST_ROOT}/corrupt-install.log"
 [ "$(HOME="${HOME_DIR}" "${LAUNCHER}" --version)" = "0.4.0" ]
 grep -Fq 'preserved = true' "${INSTALL_DIR}/config.toml"
+
+# Termux must resolve to the android package even though uname reports Linux.
+# Force the branch so CI covers it on hosts that are not Termux.
+TERMUX_ARCHIVE="denova-${VERSION}-android-arm64.tar.gz"
+(cd "${PACKAGE_ROOT}" && tar -czf "${RELEASE_DIR}/${TERMUX_ARCHIVE}" denova)
+if command -v sha256sum >/dev/null 2>&1; then
+  termux_checksum="$(sha256sum "${RELEASE_DIR}/${TERMUX_ARCHIVE}" | awk '{print $1}')"
+else
+  termux_checksum="$(shasum -a 256 "${RELEASE_DIR}/${TERMUX_ARCHIVE}" | awk '{print $1}')"
+fi
+printf '%s  %s\n' "${termux_checksum}" "${TERMUX_ARCHIVE}" >> "${RELEASE_DIR}/checksums.txt"
+
+TERMUX_HOME="${TEST_ROOT}/termux-home"
+mkdir -p "${TERMUX_HOME}"
+PATH="${FAKE_BIN}:${PATH}" \
+  HOME="${TERMUX_HOME}" \
+  TERMUX_VERSION="0.118.0" \
+  DENOVA_INSTALL_TEST_RELEASE_DIR="${RELEASE_DIR}" \
+  DENOVA_INSTALL_TEST_URL_LOG="${TEST_ROOT}/termux-urls.log" \
+  sh "${ROOT_DIR}/scripts/install.sh" >/dev/null
+grep -Fq "${TERMUX_ARCHIVE}" "${TEST_ROOT}/termux-urls.log"
+[ "$(HOME="${TERMUX_HOME}" "${TERMUX_HOME}/.local/bin/denova" --version)" = "0.4.0" ]
 
 printf 'Installer tests passed.\n'

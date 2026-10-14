@@ -49,6 +49,13 @@ var ripgrepAssets = map[string]ripgrepAsset{
 		SHA256:         "800b1e7206afe799dfb5a6901f23147cfaabe0e52210538100f61e86e1740915",
 		ExecutableName: "rg",
 	},
+	// Termux cannot run the glibc builds, but the static musl build runs on
+	// Android unchanged.
+	"android-arm64": {
+		Name:           "ripgrep-15.2.0-aarch64-unknown-linux-musl.tar.gz",
+		SHA256:         "800b1e7206afe799dfb5a6901f23147cfaabe0e52210538100f61e86e1740915",
+		ExecutableName: "rg",
+	},
 	"linux-x64": {
 		Name:           "ripgrep-15.2.0-x86_64-unknown-linux-musl.tar.gz",
 		SHA256:         "33e15bcf1624b25cdd2a55813a47a2f95dbe126268203e76aa6a585d1e7b149c",

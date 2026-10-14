@@ -48,6 +48,8 @@ case "${RIPGREP_GOOS}-${RIPGREP_GOARCH}" in
     darwin-amd64) RIPGREP_TARGET="darwin-x64" ;;
     linux-arm64) RIPGREP_TARGET="linux-arm64" ;;
     linux-amd64) RIPGREP_TARGET="linux-x64" ;;
+    # Termux builds with the android target but runs the static musl ripgrep.
+    android-arm64) RIPGREP_TARGET="linux-arm64" ;;
     windows-amd64) RIPGREP_TARGET="windows-x64" ;;
     *)
         echo "错误: 当前平台没有 Denova 内置 ripgrep 产物: ${RIPGREP_GOOS}-${RIPGREP_GOARCH}" >&2

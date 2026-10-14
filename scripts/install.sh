@@ -91,10 +91,26 @@ choose_data_dir() {
   [ "${DATA_DIR}" != "/" ] || fail "DENOVA_DIR cannot be /"
 }
 
+# Termux reports the Linux kernel but runs on Android, where the seccomp
+# policy blocks faccessat2 and terminates a linux build with SIGSYS. It needs
+# the android package.
+is_termux() {
+  case "${PREFIX:-}" in
+    */com.termux/files/usr) return 0 ;;
+  esac
+  [ -n "${TERMUX_VERSION:-}" ]
+}
+
 resolve_platform() {
   case "$(uname -s)" in
     Darwin) platform_os="darwin" ;;
-    Linux) platform_os="linux" ;;
+    Linux)
+      if is_termux; then
+        platform_os="android"
+      else
+        platform_os="linux"
+      fi
+      ;;
     *) fail "unsupported operating system: $(uname -s)" ;;
   esac
 

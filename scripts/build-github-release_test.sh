@@ -55,8 +55,8 @@ export DENOVA_RELEASE_FRONTEND_DIR="${TEST_ROOT}/web/dist"
 
 bash "${TEST_ROOT}/scripts/build-github-release.sh" v1.2.3 > "${TEST_ROOT}/build.log"
 assets="${TEST_ROOT}/dist/github-release"
-test "$(find "${assets}" -maxdepth 1 -name 'denova-*' -type f | wc -l | tr -d ' ')" = 5
-test "$(wc -l < "${assets}/checksums.txt" | tr -d ' ')" = 5
+test "$(find "${assets}" -maxdepth 1 -name 'denova-*' -type f | wc -l | tr -d ' ')" = 6
+test "$(wc -l < "${assets}/checksums.txt" | tr -d ' ')" = 6
 if command -v sha256sum >/dev/null 2>&1; then
   (cd "${assets}" && sha256sum -c checksums.txt)
 else

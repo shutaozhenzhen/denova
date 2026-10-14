@@ -23,6 +23,9 @@ TARGETS=(
   "darwin-x64:darwin:amd64:denova:denova-updater:tar.gz"
   "linux-arm64:linux:arm64:denova:denova-updater:tar.gz"
   "linux-x64:linux:amd64:denova:denova-updater:tar.gz"
+  # Termux runs on Android, whose seccomp policy blocks faccessat2 and kills a
+  # GOOS=linux build with SIGSYS on its first os/exec.LookPath call.
+  "android-arm64:android:arm64:denova:denova-updater:tar.gz"
   "windows-x64:windows:amd64:denova.exe:denova-updater.exe:zip"
 )
 
@@ -127,9 +130,9 @@ EOF
 
 - The release workflow requires successful CI for the exact tagged commit, including both Go modules, frontend unit tests, translations, and browser journeys against the built distribution.
 - Packaging reuses the frontend from that CI run; platform archives are compiled in parallel without repeating the test suites.
-- Packaging: five platform archives are generated from the same source revision and listed in `checksums.txt`.
+- Packaging: six platform archives are generated from the same source revision and listed in `checksums.txt`.
 
-发布流程要求标签对应提交的 CI 成功，覆盖两个 Go module、前端单测、双语键检查、生产构建及构建产物上的浏览器流程；复用该次 CI 的前端产物，并行生成五个平台压缩包及 `checksums.txt`。
+发布流程要求标签对应提交的 CI 成功，覆盖两个 Go module、前端单测、双语键检查、生产构建及构建产物上的浏览器流程；复用该次 CI 的前端产物，并行生成六个平台压缩包及 `checksums.txt`。
 
 ## Install / 安装
 
