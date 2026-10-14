@@ -198,6 +198,10 @@ func openBrowser(url string) {
 		cmd = exec.Command("open", url)
 	case "linux":
 		cmd = exec.Command("xdg-open", url)
+	case "android":
+		// Termux ships no xdg-open; termux-open-url (termux-api) hands the URL
+		// to the Android browser.
+		cmd = exec.Command("termux-open-url", url)
 	case "windows":
 		cmd = exec.Command("cmd", "/c", "start", url)
 	}
