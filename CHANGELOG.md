@@ -10,6 +10,14 @@ Denova records only major user-visible features, important compatibility or data
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)。
 
+## [v0.5.2-termux.1]
+
+### Brief / 简要说明
+
+Termux 验证版本：验证 Android/arm64 发布包的构建、校验与安装链路，不作为正式功能发布。
+
+Termux validation build: verifies the Android/arm64 release package build, checksum and install path. Not a feature release.
+
 ## [Unreleased]
 
 ### Added / 新增
